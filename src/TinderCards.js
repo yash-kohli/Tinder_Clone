@@ -1,22 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TinderCard from "react-tinder-card";
 import "./TinderCards.css";
+import database from "./firebase";
 function TinderCards() {
-  const [people, setPeople] = useState([
-    {
-      name: "husky",
-      url:
-        "https://www.insidedogsworld.com/wp-content/uploads/2016/12/husky10.jpg",
-    },
-    {
-      name: "zakurberg",
-      url:
-        "https://media4.s-nbcnews.com/i/newscms/2018_45/2456801/180606-mark-zuckerberg-se-3221p_bb99e5f9cd63bddb4392bf22625a2998.JPG",
-    },
-  ]);
+  const [people, setPeople] = useState([]);
+  useEffect(() => {
+    const unsubscribe = database
+      .collection("people")
+      .onSnapshot((snapshot) =>
+        setPeople(snapshot.docs.map((doc) => doc.data()))
+      );
+    return () => {
+      unsubscribe();
+    };
+  }, []);
   return (
     <div>
-      <h1>Tinder Cards</h1>
       <div className="tinderCards__cardContainer">
         {people.map((person) => (
           <TinderCard
